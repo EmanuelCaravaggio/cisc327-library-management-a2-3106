@@ -19,18 +19,22 @@ Students are provided with:
 - [`requirements.txt`](requirements.txt): Python dependencies
 
 ## ❗ Known Issues
+
 The implemented functions may contain intentional bugs. Students should discover these through unit testing (to be covered in later assignments).
 
 ## Database Schema
+
 **Books Table:**
+
 - `id` (INTEGER PRIMARY KEY)
 - `title` (TEXT NOT NULL)
-- `author` (TEXT NOT NULL)  
+- `author` (TEXT NOT NULL)
 - `isbn` (TEXT UNIQUE NOT NULL)
 - `total_copies` (INTEGER NOT NULL)
 - `available_copies` (INTEGER NOT NULL)
 
 **Borrow Records Table:**
+
 - `id` (INTEGER PRIMARY KEY)
 - `patron_id` (TEXT NOT NULL)
 - `book_id` (INTEGER FOREIGN KEY)
@@ -39,6 +43,7 @@ The implemented functions may contain intentional bugs. Students should discover
 - `return_date` (TEXT NULL)
 
 ## Assignment Instructions
+
 See [`student_instructions.md`](student_instructions.md) for complete assignment details.
 
 **Resources for students:**
@@ -48,4 +53,4 @@ See [`student_instructions.md`](student_instructions.md) for complete assignment
 - [Pytest framework](https://realpython.com/pytest-python-testing/)
 - [Python Blueprint](https://flask.palletsprojects.com/en/stable/blueprints)
 
-
+![Library Management System](https://github.com/EmanuelCaravaggio/cisc327-library-management-a2-3106/actions/workflows/test.yml/badge.svg)
