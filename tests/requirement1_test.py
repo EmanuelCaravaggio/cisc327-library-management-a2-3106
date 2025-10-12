@@ -5,7 +5,7 @@ from library_service import (
 
 def test_add_book_valid_ipnut():
     """Adding a book to system with valid input"""
-    success, message = add_book_to_catalog("Pride and Prejedice","Jane Austen","1234567890123", 4)
+    success, message = add_book_to_catalog("Pride and Prejedice","Jane Austen","1234567890123", 13)
 
     assert success == True
     assert "successfully added" in message.lower()
