@@ -4,13 +4,9 @@ from library_service import (
 )
 
 
-
-
-
-
 def test_borrow_book_valid_input():
     """borrowing a book in the system successfully"""
-    add_book_to_catalog("Pride and Prejudice","Jane Austen","1234567890123", 1)
+    add_book_to_catalog("Pride and Prejudice","Jane Austen","1234567891011", 1)
     success, message = borrow_book_by_patron("123456", 1)
     assert success == True
 
