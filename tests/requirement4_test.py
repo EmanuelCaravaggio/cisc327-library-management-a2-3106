@@ -1,6 +1,26 @@
 import pytest
 from library_service import return_book_by_patron
 
+import sqlite3
+import pytest
+from library_service import add_book_to_catalog
+
+@pytest.fixture(scope="function", autouse=True)
+def reset_db():
+    """Reset DB before each test"""
+    conn = sqlite3.connect("library.db")
+    cur = conn.cursor()
+    
+    # Clear books and patrons tables
+    cur.execute("DELETE FROM books")
+    cur.execute("DELETE FROM patrons")
+    conn.commit()
+    
+    # Add sample patron for borrow test
+    cur.execute("INSERT INTO patrons (id, name) VALUES (?,?)", (123456, "Test Patron"))
+    conn.commit()
+    conn.close()
+
 
 def test_return_valid_book_return_no_fees():
     """returning book with no fees calculated"""
