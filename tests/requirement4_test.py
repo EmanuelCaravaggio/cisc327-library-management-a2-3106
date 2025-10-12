@@ -1,19 +1,6 @@
 import pytest
 from library_service import return_book_by_patron
 
-import sqlite3
-@pytest.fixture(scope="function", autouse=True)
-def reset_db():
-    """Reset DB before each test"""
-    # Use context manager so connection always closes
-    with sqlite3.connect("library.db") as conn:
-        cur = conn.cursor()
-        # Make sure tables exist before deleting
-        cur.execute("CREATE TABLE IF NOT EXISTS books (id INTEGER PRIMARY KEY, title TEXT, author TEXT, isbn TEXT, available_copies INTEGER, total_copies INTEGER)")
-        cur.execute("CREATE TABLE IF NOT EXISTS patrons (id INTEGER PRIMARY KEY, name TEXT)")
-        cur.execute("DELETE FROM books")
-        cur.execute("DELETE FROM patrons")
-        conn.commit()
 
 
 def test_return_valid_book_return_no_fees():
