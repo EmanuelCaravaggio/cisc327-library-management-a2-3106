@@ -2,6 +2,8 @@
 
 ![Library Management System](https://github.com/EmanuelCaravaggio/cisc327-library-management-a2-3106/actions/workflows/tst.yml/badge.svg)
 
+[![codecov](https://codecov.io/github/EmanuelCaravaggio/cisc327-library-management-a2-3106/graph/badge.svg?token=6YEVUKKTXX)](https://codecov.io/github/EmanuelCaravaggio/cisc327-library-management-a2-3106)
+
 ## Overview
 
 This project contains a partial implementation of a Flask-based Library Management System with SQLite database, designed for CISC 327 (Software Quality Assurance) coursework.
