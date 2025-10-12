@@ -3,24 +3,18 @@ from library_service import (
     add_book_to_catalog
 )
 import sqlite3
-import pytest
-from library_service import add_book_to_catalog
-
 @pytest.fixture(scope="function", autouse=True)
 def reset_db():
     """Reset DB before each test"""
-    conn = sqlite3.connect("library.db")
-    cur = conn.cursor()
-    
-    # Clear books and patrons tables
-    cur.execute("DELETE FROM books")
-    cur.execute("DELETE FROM patrons")
-    conn.commit()
-    
-    # Add sample patron for borrow test
-    cur.execute("INSERT INTO patrons (id, name) VALUES (?,?)", (123456, "Test Patron"))
-    conn.commit()
-    conn.close()
+    # Use context manager so connection always closes
+    with sqlite3.connect("library.db") as conn:
+        cur = conn.cursor()
+        # Make sure tables exist before deleting
+        cur.execute("CREATE TABLE IF NOT EXISTS books (id INTEGER PRIMARY KEY, title TEXT, author TEXT, isbn TEXT, available_copies INTEGER, total_copies INTEGER)")
+        cur.execute("CREATE TABLE IF NOT EXISTS patrons (id INTEGER PRIMARY KEY, name TEXT)")
+        cur.execute("DELETE FROM books")
+        cur.execute("DELETE FROM patrons")
+        conn.commit()
 
 
 def test_add_book_valid_ipnut():

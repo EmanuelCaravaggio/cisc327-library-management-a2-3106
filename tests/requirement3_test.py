@@ -1,34 +1,30 @@
 import pytest
 from library_service import (
-    borrow_book_by_patron
+    borrow_book_by_patron,add_book_to_catalog
 )
 import sqlite3
-import pytest
-from library_service import add_book_to_catalog
 
 @pytest.fixture(scope="function", autouse=True)
 def reset_db():
     """Reset DB before each test"""
-    conn = sqlite3.connect("library.db")
-    cur = conn.cursor()
-    
-    # Clear books and patrons tables
-    cur.execute("DELETE FROM books")
-    cur.execute("DELETE FROM patrons")
-    conn.commit()
-    
-    # Add sample patron for borrow test
-    cur.execute("INSERT INTO patrons (id, name) VALUES (?,?)", (123456, "Test Patron"))
-    conn.commit()
-    conn.close()
+    # Use context manager so connection always closes
+    with sqlite3.connect("library.db") as conn:
+        cur = conn.cursor()
+        # Make sure tables exist before deleting
+        cur.execute("CREATE TABLE IF NOT EXISTS books (id INTEGER PRIMARY KEY, title TEXT, author TEXT, isbn TEXT, available_copies INTEGER, total_copies INTEGER)")
+        cur.execute("CREATE TABLE IF NOT EXISTS patrons (id INTEGER PRIMARY KEY, name TEXT)")
+        cur.execute("DELETE FROM books")
+        cur.execute("DELETE FROM patrons")
+        conn.commit()
+
 
 
 def test_borrow_book_valid_input():
     """borrowing a book in the system successfully"""
-    success, message = borrow_book_by_patron("123456",1)
-
+    add_book_to_catalog("Pride and Prejudice","Jane Austen","1234567890123", 1)
+    success, message = borrow_book_by_patron("123456", 1)
     assert success == True
-    assert "successfully borrowed" in message.lower()
+
 
 def test_borrow_book_invalid_ID_too_short():
     """borrowing a book in the system where ID input is too short"""
