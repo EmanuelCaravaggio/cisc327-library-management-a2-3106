@@ -1,0 +1,17 @@
+import pytest 
+from services import library_service, payment_service
+from database import get_book_by_id
+import os
+
+class UnixFS:
+
+    @staticmethod
+    def rm(filename):
+        os.remove(filename)
+
+def test_unix_fs(mocker):
+    mocker.patch('os.remove')
+    UnixFS.rm('file')
+    os.remove.assert_called_once_with('file')
+
+
