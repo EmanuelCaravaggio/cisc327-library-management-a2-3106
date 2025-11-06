@@ -1,6 +1,6 @@
 import pytest
 import sqlite3
-from library_service import search_books_in_catalog
+from services.library_service import search_books_in_catalog
 
 @pytest.fixture(scope="function", autouse=True)
 def seed_books():

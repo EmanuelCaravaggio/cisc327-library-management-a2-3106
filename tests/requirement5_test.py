@@ -1,5 +1,5 @@
 import pytest
-from library_service import calculate_late_fee_for_book
+from services.library_service import calculate_late_fee_for_book
 
 import sqlite3
 @pytest.fixture(scope="function", autouse=True)
