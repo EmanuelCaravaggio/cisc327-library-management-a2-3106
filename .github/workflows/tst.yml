@@ -26,7 +26,7 @@ jobs:
       - name: Run tests with coverage
         run: |
           export PYTHONPATH="${PYTHONPATH}:$(pwd)"  # ✅ Fix imports
-          pytest --cov=library_service --cov-report=xml tests/
+          pytest --cov=services --cov-report=xml tests/
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
