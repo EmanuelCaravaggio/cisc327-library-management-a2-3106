@@ -6,7 +6,6 @@ import os
 from unittest.mock import Mock
 
 class UnixFS:
-
     @staticmethod
     def rm(filename):
         os.remove(filename)
