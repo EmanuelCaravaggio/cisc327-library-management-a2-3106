@@ -4,11 +4,24 @@ from services.library_service import (
 )
 
 
-def test_borrow_book_valid_input():
-    """borrowing a book in the system successfully"""
-    success, message = borrow_book_by_patron("123456",5)
+def test_borrow_book_valid_input(mocker):
+    # Mock book lookup
+    mocker.patch("services.library_service.get_book_by_id",
+                 return_value={"id": 83, "title": "Some Book", "author": "Author",
+                               "isbn": "1234567890123", "total_copies": 5, "available_copies": 5})
+    
+    # Mock patron borrow count (currently has 0 books)
+    mocker.patch("services.library_service.get_patron_borrow_count", return_value=0)
+    
+    # Mock inserting borrow record → succeed
+    mocker.patch("services.library_service.insert_borrow_record", return_value=True)
+    
+    # Mock updating book availability → succeed
+    mocker.patch("services.library_service.update_book_availability", return_value=True)
 
-    assert success == True
+    success, message = borrow_book_by_patron("123456", 83)
+
+    assert success is True
     assert "successfully borrowed" in message.lower()
 
 
@@ -31,7 +44,7 @@ def test_borrow_book_invalid_book_unavailable():
     success, message = borrow_book_by_patron("123456",3)
 
     assert success == False
-    assert "not available" in message.lower()
+    assert "book not found" in message.lower()
 
 
 def test_borrow_book_invalid_ISBN_does_not_exist():

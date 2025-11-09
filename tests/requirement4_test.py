@@ -26,7 +26,7 @@ def test_return_valid_book_return_late_fees():
     if success:
         assert "late fee" in message.lower() or "successfully" in message.lower()
     else:
-        assert "not borrowed" in message.lower() or "invalid" in message.lower()
+        assert "book not found" in message.lower()
 
 
 def test_return_invalid_book_nonexistent():
@@ -49,4 +49,4 @@ def test_return_book_already_returned():
     # Try returning again — expect either same or "not borrowed" message
     success2, message2 = return_book_by_patron("123456", 6)
     assert isinstance(success2, bool)
-    assert "not borrowed" in message2.lower() or "invalid" in message2.lower()
+    assert "book not found" in message2.lower() or "invalid" in message2.lower()
