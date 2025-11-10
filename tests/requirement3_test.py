@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import Mock, patch
 from services.library_service import (
     borrow_book_by_patron,add_book_to_catalog
 )
@@ -55,4 +56,20 @@ def test_borrow_book_invalid_ISBN_does_not_exist():
     assert "book not found" in message.lower()
 
 
+# small additioanl tests to push coverage over 80%+
+def test_borrow_invalid_patron_id():
+    success, message = borrow_book_by_patron("abc", 1)
+    assert not success
+    assert "Invalid patron ID" in message
 
+@patch("services.library_service.get_book_by_id", return_value=None)
+def test_borrow_book_not_found(mock_get):
+    success, message = borrow_book_by_patron("123456", 1)
+    assert not success
+    assert "Book not found" in message
+
+@patch("services.library_service.get_book_by_id", return_value={"id": 1, "title": "Pride and Prejudice", "available_copies": 0})
+def test_borrow_book_unavailable(mock_get):
+    success, message = borrow_book_by_patron("123456", 1)
+    assert not success
+    assert "not available" in message

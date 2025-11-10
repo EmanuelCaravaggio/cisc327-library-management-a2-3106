@@ -1,5 +1,6 @@
 import pytest
 import sqlite3
+from unittest.mock import Mock, patch
 from services.library_service import search_books_in_catalog
 
 @pytest.fixture(scope="function", autouse=True)
@@ -43,3 +44,21 @@ def test_search_exact_isbn():
 def test_search_with_whitespace():
     result = search_books_in_catalog("   prid   ", "title")
     assert any(book["title"] == "Pride and Prejudice" for book in result)
+
+
+# small additioanl tests to push coverage over 80%+
+def test_search_empty_term():
+    result = search_books_in_catalog("", "title")
+    assert result == []
+
+@patch("services.library_service.get_book_by_isbn")
+def test_search_isbn_found(mock_get):
+    mock_get.return_value = {"title":"Pride and Prejudice"}
+    result = search_books_in_catalog("1234567890123", "isbn")
+    assert result[0]["title"] == "Pride and Prejudice"
+
+@patch("services.library_service.get_all_books")
+def test_search_title_no_match(mock_get):
+    mock_get.return_value = [{"title":"Pride and Prejudice", "author":"Jane Austen"}]
+    result = search_books_in_catalog("Nonexistent", "title")
+    assert result == []

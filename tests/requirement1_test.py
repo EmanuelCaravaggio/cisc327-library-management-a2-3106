@@ -47,3 +47,27 @@ def test_add_book_invalid_author_name_too_long():
 
     assert success == False
     assert "author" in message.lower()
+
+
+# small additioanl tests to push coverage over 80%+
+def test_add_book_empty_title():
+    success, message = add_book_to_catalog("", "Jane Austen", "1234567890123", 1)
+    assert success is False
+    assert "Title is required" in message
+
+def test_add_book_long_title():
+    long_title = "A" * 201
+    success, message = add_book_to_catalog(long_title, "Jane Austen", "1234567890123", 1)
+    assert success is False
+    assert "Title must be less than 200" in message
+
+def test_add_book_empty_author():
+    success, message = add_book_to_catalog("Pride and Prejudice", "", "1234567890123", 1)
+    assert success is False
+    assert "Author is required" in message
+
+def test_add_book_long_author():
+    long_author = "A" * 101
+    success, message = add_book_to_catalog("Pride and Prejudice", long_author, "1234567890123", 1)
+    assert success is False
+    assert "Author must be less than 100" in message

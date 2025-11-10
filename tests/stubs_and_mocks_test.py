@@ -6,7 +6,6 @@ import os
 from unittest.mock import Mock, patch
 from datetime import datetime, timedelta
 
-
 class UnixFS:
     @staticmethod
     def rm(filename):
@@ -17,10 +16,8 @@ def test_unix_fs(mocker):
     UnixFS.rm('file')
     os.remove.assert_called_once_with('file')
 
-#STUBS (PROBABLY SHOULD ADD MORE!!!)
- 
+#STUBS 
 def test_calculate_late_fee_for_book_stub(mocker):
-    # Instead of patching the function under test, patch the DB call
     stub_borrowed_books = [
         {
             "book_id": 1,
@@ -44,10 +41,9 @@ def test_get_book_by_id_stub(mocker):
         "available_copies": 4
     }
 
-    # Patch the exact location used by the service
     mocker.patch("database.get_book_by_id", return_value=stub_book)
 
-    from database import get_book_by_id  # import from the patched module
+    from database import get_book_by_id  
     result = get_book_by_id(9)
 
     assert result["title"] == "1984"
@@ -55,13 +51,8 @@ def test_get_book_by_id_stub(mocker):
 
 
 #MOCKS
-
-# =========================
 # pay_late_fees tests
-# =========================
-
-
-# --- Successful payment ---
+# Successful payment
 def test_pay_late_fees_successful_payment_mock():
     with patch("services.library_service.calculate_late_fee_for_book") as mock_fee, \
          patch("services.library_service.get_book_by_id") as mock_book:
@@ -85,7 +76,7 @@ def test_pay_late_fees_successful_payment_mock():
         assert "successful" in message.lower()
 
 
-# --- Declined payment ---
+# Declined payment
 def test_pay_late_fees_declined_payment_mock():
     with patch("services.library_service.calculate_late_fee_for_book") as mock_fee, \
          patch("services.library_service.get_book_by_id") as mock_book:
@@ -109,7 +100,7 @@ def test_pay_late_fees_declined_payment_mock():
         assert "declined" in message.lower()
 
 
-# --- Invalid patron ID ---
+# Invalid patron id
 def test_pay_late_fees_invalid_id_mock():
     mock_gateway = Mock(spec=PaymentGateway)
 
@@ -121,7 +112,7 @@ def test_pay_late_fees_invalid_id_mock():
     assert "invalid patron id" in message.lower()
 
 
-# --- Zero late fees ---
+# No late fees 
 def test_pay_late_fees_zero_late_fees_mock():
     with patch("services.library_service.calculate_late_fee_for_book") as mock_fee, \
          patch("services.library_service.get_book_by_id") as mock_book:
@@ -138,7 +129,7 @@ def test_pay_late_fees_zero_late_fees_mock():
         assert "no late fees" in message.lower()
 
 
-# --- Network error ---
+# Network error 
 def test_pay_late_fees_network_error_mock():
     with patch("services.library_service.calculate_late_fee_for_book") as mock_fee, \
          patch("services.library_service.get_book_by_id") as mock_book:
@@ -162,10 +153,10 @@ def test_pay_late_fees_network_error_mock():
         assert "network error" in message.lower()
 
 
-# =========================
-# refund_late_fee_payment tests
-# =========================
 
+# refund_late_fee_payment tests
+
+# Sucessfull refund
 def test_refund_late_fee_successful_mock():
     mock_gateway = Mock(spec=PaymentGateway)
     mock_gateway.refund_payment.return_value = (True, "Refund Complete")
@@ -176,6 +167,7 @@ def test_refund_late_fee_successful_mock():
     assert success is True
     assert "Refund Complete" in message
 
+# Invaid transaction id
 def test_refund_late_fee_invalid_transaction_id_mock():
     mock_gateway = Mock(spec=PaymentGateway)
 
@@ -185,6 +177,7 @@ def test_refund_late_fee_invalid_transaction_id_mock():
     assert success is False
     assert "invalid transaction id" in message.lower()
 
+# Invalid amount (too big)
 def test_refund_late_fee_invalid_amount1_mock():
     mock_gateway = Mock(spec=PaymentGateway)
 
@@ -194,6 +187,7 @@ def test_refund_late_fee_invalid_amount1_mock():
     assert success is False
     assert "exceeds maximum" in message.lower()
 
+# # Invalid amount (zero)
 def test_refund_late_fee_invalid_amount2_mock():
     mock_gateway = Mock(spec=PaymentGateway)
 
@@ -203,6 +197,7 @@ def test_refund_late_fee_invalid_amount2_mock():
     assert success is False
     assert "greater than 0" in message.lower()
 
+# Invalid amount (less than zero)
 def test_refund_late_fee_invalid_amount3_mock():
     mock_gateway = Mock(spec=PaymentGateway)
 
@@ -213,106 +208,47 @@ def test_refund_late_fee_invalid_amount3_mock():
     assert "greater than 0" in message.lower()
 
 
-# additioanl tests to push coverage over 80%+
-    
-def test_add_book_empty_title():
-    success, msg = add_book_to_catalog("", "Author", "1234567890123", 1)
-    assert success is False
-    assert "Title is required" in msg
-
-def test_add_book_long_title():
-    long_title = "A" * 201
-    success, msg = add_book_to_catalog(long_title, "Author", "1234567890123", 1)
-    assert success is False
-    assert "Title must be less than 200" in msg
-
-def test_add_book_empty_author():
-    success, msg = add_book_to_catalog("Title", "", "1234567890123", 1)
-    assert success is False
-    assert "Author is required" in msg
-
-def test_add_book_long_author():
-    long_author = "A" * 101
-    success, msg = add_book_to_catalog("Title", long_author, "1234567890123", 1)
-    assert success is False
-    assert "Author must be less than 100" in msg
 
 
-
-def test_borrow_invalid_patron_id():
-    success, msg = borrow_book_by_patron("abc", 1)
-    assert not success
-    assert "Invalid patron ID" in msg
-
-@patch("services.library_service.get_book_by_id", return_value=None)
-def test_borrow_book_not_found(mock_get):
-    success, msg = borrow_book_by_patron("123456", 1)
-    assert not success
-    assert "Book not found" in msg
-
-@patch("services.library_service.get_book_by_id", return_value={"id": 1, "title": "Book", "available_copies": 0})
-def test_borrow_book_unavailable(mock_get):
-    success, msg = borrow_book_by_patron("123456", 1)
-    assert not success
-    assert "not available" in msg
-
-def test_search_empty_term():
-    result = search_books_in_catalog("", "title")
-    assert result == []
-
-@patch("services.library_service.get_book_by_isbn")
-def test_search_isbn_found(mock_get):
-    mock_get.return_value = {"title":"Book"}
-    result = search_books_in_catalog("1234567890123", "isbn")
-    assert result[0]["title"] == "Book"
-
-@patch("services.library_service.get_all_books")
-def test_search_title_no_match(mock_get):
-    mock_get.return_value = [{"title":"A Book", "author":"Author"}]
-    result = search_books_in_catalog("Nonexistent", "title")
-    assert result == []
-
-
-
+# small additioanl tests to push coverage over 80%+
 def test_process_payment_invalid_amount_zero():
     gateway = PaymentGateway()
-    success, txn_id, msg = gateway.process_payment("123456", 0)
+    success, txn_id, message = gateway.process_payment("123456", 0)
     assert not success
-    assert "Invalid amount" in msg
+    assert "Invalid amount" in message
 
 def test_process_payment_amount_exceeds_limit():
     gateway = PaymentGateway()
-    success, txn_id, msg = gateway.process_payment("123456", 2000)
+    success, txn_id, message = gateway.process_payment("123456", 2000)
     assert not success
-    assert "exceeds limit" in msg
+    assert "exceeds limit" in message
 
 def test_process_payment_invalid_patron_id():
     gateway = PaymentGateway()
-    success, txn_id, msg = gateway.process_payment("12345", 50)
+    success, txn_id, message = gateway.process_payment("12345", 50)
     assert not success
-    assert "Invalid patron ID" in msg
+    assert "Invalid patron ID" in message
 
 def test_process_payment_success():
     gateway = PaymentGateway()
-    success, txn_id, msg = gateway.process_payment("123456", 50)
+    success, txn_id, message = gateway.process_payment("123456", 50)
     assert success
     assert txn_id.startswith("txn_")
 
-
 def test_refund_payment_invalid_transaction_id():
     gateway = PaymentGateway()
-    success, msg = gateway.refund_payment("abc123", 10)
+    success, message = gateway.refund_payment("abc123", 10)
     assert not success
-    assert "Invalid transaction ID" in msg
+    assert "Invalid transaction ID" in message
 
 def test_refund_payment_invalid_amount():
     gateway = PaymentGateway()
-    success, msg = gateway.refund_payment("txn_123456_1", 0)
+    success, message = gateway.refund_payment("txn_123456_1", 0)
     assert not success
-    assert "Invalid refund amount" in msg
+    assert "Invalid refund amount" in message
 
 def test_refund_payment_success():
     gateway = PaymentGateway()
-    success, msg = gateway.refund_payment("txn_123456_1", 50)
+    success, message = gateway.refund_payment("txn_123456_1", 50)
     assert success
-    assert "Refund of $50.00" in msg
+    assert "Refund of $50.00" in message
