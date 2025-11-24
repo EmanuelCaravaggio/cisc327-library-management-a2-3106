@@ -1,8 +1,7 @@
-from flask import url_for
-from playwright.sync_api import Page, expect
 import pytest
 import time
-pytest.skip("Skipping Playwright E2E tests in CI", allow_module_level=True)
+from flask import url_for
+from playwright.sync_api import Page, expect
 
 
 URL = "http://localhost:5000"
