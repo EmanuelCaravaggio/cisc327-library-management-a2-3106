@@ -24,13 +24,14 @@ jobs:
           pip install pytest pytest-cov
           pip install playwright pytest-playwright
 
+      - name: Install Playwright Browsers # ✅ MOVE BEFORE TESTS
+        run: |
+          python -m playwright install --with-deps
+
       - name: Run tests with coverage
         run: |
-          export PYTHONPATH="${PYTHONPATH}:$(pwd)"  # ✅ Fix imports
+          export PYTHONPATH="${PYTHONPATH}:$(pwd)"
           pytest --cov=services --cov-report=xml tests/
-      - name: Install Playwright browsers
-        run: |
-          playwright install --with-deps
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
