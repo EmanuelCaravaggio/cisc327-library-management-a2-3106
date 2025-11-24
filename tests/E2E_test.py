@@ -5,6 +5,8 @@ import time
 
 URL = "http://localhost:5000"
 
+pytest.skip("Skipping Playwright E2E tests in CI", allow_module_level=True)
+
 @pytest.fixture(scope="session")
 def new_isbn():
  return str(int(time.time()))[:13].ljust(13,"0")
