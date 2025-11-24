@@ -24,9 +24,16 @@ jobs:
           pip install pytest pytest-cov
           pip install playwright pytest-playwright
 
-      - name: Install Playwright Browsers # ✅ MOVE BEFORE TESTS
+      - name: Install Playwright Browsers
         run: |
           python -m playwright install --with-deps
+
+      - name: Start Flask App in the Background
+        env:
+          FLASK_APP: app.py
+        run: |
+          nohup flask run --host=0.0.0.0 --port=5000 &
+          sleep 5   # give the app time to boot
 
       - name: Run tests with coverage
         run: |
