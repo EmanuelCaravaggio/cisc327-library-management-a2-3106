@@ -28,6 +28,9 @@ jobs:
         run: |
           export PYTHONPATH="${PYTHONPATH}:$(pwd)"  # ✅ Fix imports
           pytest --cov=services --cov-report=xml tests/
+      - name: Install Playwright browsers
+        run: |
+          playwright install --with-deps
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
