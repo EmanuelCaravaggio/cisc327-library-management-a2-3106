@@ -2,10 +2,10 @@ from flask import url_for
 from playwright.sync_api import Page, expect
 import pytest
 import time
+pytest.skip("Skipping Playwright E2E tests in CI", allow_module_level=True)
+
 
 URL = "http://localhost:5000"
-
-pytest.skip("Skipping Playwright E2E tests in CI", allow_module_level=True)
 
 @pytest.fixture(scope="session")
 def new_isbn():
